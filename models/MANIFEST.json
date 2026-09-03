@@ -1,0 +1,61 @@
+{
+  "model_name": "aemeath-voice",
+  "version": "1.0.0",
+  "release_date": "2026-09-02",
+  "framework": "GPT-SoVITS v2",
+  "character": "爱弥斯 (Aemeath)",
+  "game": "鸣潮 (Wuthering Waves)",
+  "language": "zh-CN",
+  "files": [
+    {
+      "path": "models/s1/aemeath-e20.ckpt",
+      "type": "GPT semantic model",
+      "size_bytes": 156237824,
+      "size_human": "149 MB",
+      "sha256": "PLACEHOLDER_TO_BE_FILLED_BY_CI",
+      "epoch": 20,
+      "format": "PyTorch Lightning checkpoint"
+    },
+    {
+      "path": "models/s2/aemeath_e20.pth",
+      "type": "SoVITS acoustic model (inference weights)",
+      "size_bytes": 85983232,
+      "size_human": "82 MB",
+      "sha256": "PLACEHOLDER_TO_BE_FILLED_BY_CI",
+      "epoch": 20,
+      "format": "PyTorch state dict (half precision)"
+    },
+    {
+      "path": "models/reference/basic_121068.wav",
+      "type": "Reference audio",
+      "size_bytes": 146432,
+      "size_human": "143 KB",
+      "duration_seconds": 3.38,
+      "sample_rate": 22050,
+      "transcript": "世界由我守护。目标揭露"
+    }
+  ],
+  "training": {
+    "epochs": 20,
+    "batch_size": 4,
+    "learning_rate": "S1: 0.01 -> 0.0001, S2: 0.0001",
+    "total_data_minutes": 25.7,
+    "num_wavs": 192,
+    "gpu": "RTX 5070 Ti 12GB",
+    "training_duration_minutes_per_epoch": "~10"
+  },
+  "metrics": {
+    "s1_loss_epoch_1": 2.09e+3,
+    "s1_loss_epoch_20": 1.05e+3,
+    "s1_loss_improvement_percent": 50,
+    "s1_top3_acc_epoch_1": 0.522,
+    "s1_top3_acc_epoch_20": 0.830,
+    "s1_top3_acc_improvement_percent": 60
+  },
+  "license": "MIT",
+  "usage_restrictions": [
+    "Personal learning and research only",
+    "No commercial use without authorization from KURO GAMES",
+    "Character 'Aemeath' is IP of KURO GAMES"
+  ]
+}

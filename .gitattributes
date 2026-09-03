@@ -1,0 +1,11 @@
+# Git LFS 配置 - 大模型文件用 LFS 管理
+# 安装 LFS: https://git-lfs.github.com/
+# 初始化: git lfs install
+# 模型权重（>100MB，需要 LFS 或外链）
+*.ckpt filter=lfs diff=lfs merge=lfs -text
+*.pth filter=lfs diff=lfs merge=lfs -text
+# 也可以单独指定
+# models/s1/aemeath-e20.ckpt filter=lfs diff=lfs merge=lfs -text
+# models/s2/aemeath_e20.pth filter=lfs diff=lfs merge=lfs -text
+models/s1/*.ckpt filter=lfs diff=lfs merge=lfs -text
+models/s2/*.pth filter=lfs diff=lfs merge=lfs -text

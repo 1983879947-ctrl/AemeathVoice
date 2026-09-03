@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this model in your research, please cite it as below."
+type: software
+title: "Aemeath Voice"
+version: 1.0.0
+date-released: 2026-09-02
+authors:
+  - family-names: "一行日辉"
+    given-names: ""
+    alias: "your-username"
+license: MIT
+url: "https://github.com/your-username/AemeathVoice"
+repository-code: "https://github.com/your-username/AemeathVoice"
+keywords:
+  - text-to-speech
+  - voice-cloning
+  - chinese
+  - gpt-sovits
+  - wuthering-waves
+  - aemeath
+abstract: >
+  A Chinese voice cloning model based on GPT-SoVITS, trained on 192
+  utterances (25.7 minutes) of the Wuthering Waves character Aemeath
+  (爱弥斯). Achieves 50% loss reduction and 60% top-3 accuracy gain
+  after 20 epochs of fine-tuning.

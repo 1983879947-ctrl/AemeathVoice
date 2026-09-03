@@ -1,0 +1,46 @@
+# Aemeath Voice - Python 依赖
+# 注：本项目基于 GPT-SoVITS，完整依赖请参考官方仓库 requirements.txt
+
+# ===== 核心 =====
+torch>=2.1.0
+torchvision
+torchaudio
+
+# ===== GPT-SoVITS 主要依赖 =====
+transformers>=4.30
+numpy<2.0
+scipy
+librosa
+soundfile
+jieba
+jieba-posseg
+pypinyin
+paddlespeech
+
+# ===== 中文支持 =====
+cn2an
+g2pW
+g2pw  # 实际包名
+chinese2
+
+# ===== NLTK =====
+nltk
+
+# ===== 其他 =====
+gradio  # WebUI（如需）
+fastapi  # HTTP API（如需）
+uvicorn  # HTTP API（如需）
+pyyaml
+einops
+omegaconf
+hydra-core
+
+# ===== Web/API 部署 =====
+fastapi>=0.100
+uvicorn[standard]
+pydantic>=2.0
+
+# ===== 工具 =====
+tqdm
+tensorboard
+matplotlib

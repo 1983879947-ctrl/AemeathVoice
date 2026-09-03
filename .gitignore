@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ====== 项目特定 ======
+
+# 用户生成的输出（不纳入版本控制）
+output/
+outputs/
+aemeath_outputs/
+*.wav
+*.mp3
+*.flac
+
+# 例外：保留示例和参考音频
+!examples/*.wav
+!models/reference/*.wav
+
+# 日志和临时文件
+*.log
+*.tmp
+training_logs/
+tensorboard_logs/
+
+# 训练中间产物
+*.pt.bak
+*.ckpt.bak
+checkpoints/
+s2_ckpt_dir/
+exp_dir/
+
+# 本地配置
+config.local.yaml
+.env
+.env.local
+
+# 测试临时文件
+test_*.py
+*_test.py
+tests/__pycache__/
+
+# 大文件备份
+*.zip
+*.tar.gz
+*.7z
+
+# 虚拟环境
+rvc_venv/
+venv_gpt_sovits/
+
+# Windows
+$RECYCLE.BIN/
+System Volume Information/

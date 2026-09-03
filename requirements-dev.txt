@@ -1,0 +1,7 @@
+# 开发依赖（不是必须的，仅供贡献者使用）
+pytest>=7.0
+pytest-cov
+black
+flake8
+mypy
+ipython

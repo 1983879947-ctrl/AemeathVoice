@@ -28,70 +28,43 @@
 
 ## 🚀 快速开始
 
-### 1. 准备 GPT-SoVITS 环境
+### ⚡ 方式一：一键下载 EXE 分发版（推荐，无需配环境）
 
-由于训练用 GPT-SoVITS，本模型依赖其推理代码。请先安装官方项目：
+三个分卷全部下载后解压即用，不装 Python、不配 CUDA 环境：
+
+| 分卷 | 内容 | 大小 | 一键下载 |
+|------|------|------|----------|
+| part1 | `AemeathVoice.exe` + Python 运行时 + 全部代码 | 576 MB | [⬇️ 下载](https://github.com/1983879947-ctrl/AemeathVoice/releases/download/v1.0.0/AemeathVoice_v1.0.0_part1_runtime.zip) |
+| part2 | 爱弥斯训练模型 + GPT-SoVITS v2 预训练底座 | 1.8 GB | [⬇️ 下载](https://github.com/1983879947-ctrl/AemeathVoice/releases/download/v1.0.0/AemeathVoice_v1.0.0_part2_models.zip) |
+| part3 | G2PW 多音字模型 + 文本前端 | 608 MB | [⬇️ 下载](https://github.com/1983879947-ctrl/AemeathVoice/releases/download/v1.0.0/AemeathVoice_v1.0.0_part3_g2pw_text.zip) |
+
+> 也可以到 [Release v1.0.0](https://github.com/1983879947-ctrl/AemeathVoice/releases/tag/v1.0.0) 页面统一下载。
+> 本仓库为私密，下载需登录有权限的 GitHub 账号。
+
+**三步上手：**
+
+1. 三个分卷**解压到同一个目录** → 得到完整的 `AemeathVoice/` 文件夹（3.1 GB）
+2. 双击 `AemeathVoice\AemeathVoice.exe` —— 自动启动并打开浏览器 Web 控制台
+3. 输入文本 → 点「合成语音」→ 播放 🎵
+
+> - 需要 NVIDIA 显卡（CUDA 12.x）；首次启动加载模型约 10-20 秒，之后秒响应
+> - 关闭服务：双击 `stop.bat`，或直接关掉命令行窗口
+> - 改端口 / 排错 / API 文档见 [README_EXE.md](README_EXE.md)
+
+### 🧑‍💻 方式二：从源码运行
 
 ```bash
-git clone https://github.com/RVC-Boss/GPT-SoVITS.git
-cd GPT-SoVITS
+git clone https://github.com/1983879947-ctrl/AemeathVoice.git
+cd AemeathVoice
+# 补齐 GPT-SoVITS 预训练底座与 G2PW 模型 → 见 README_EXE.md「从零部署」
+python api/inference_api.py --port 9880    # FastAPI → http://127.0.0.1:9880
 ```
 
-然后按官方文档安装依赖（推荐使用 venv）：
-```bash
-python -m venv venv
-.\venv\Scripts\activate  # Windows
-pip install -r requirements.txt
-pip install -r requirements_extra.txt  # GPT-SoVITS 额外依赖
-```
-
-> ⚠️ **Python 版本**：建议 3.10 / 3.11（Python 3.12 需要打补丁，详见 [docs/INSTALLATION.md](docs/INSTALLATION.md)）
-
-### 2. 下载预训练模型
-
-模型本身只是微调产物，**还需要 GPT-SoVITS 的预训练底座**（约 4.6 GB）：
-
-| 文件 | 下载地址 |
-|------|----------|
-| s1bert25hz-5kh-longer-epoch=12-step=369668.ckpt | [GPT-SoVITS 官方仓库](https://github.com/RVC-Boss/GPT-SoVITS) |
-| s2G2333k.pth | 同上 |
-| chinese-roberta-wwm-ext-large | 同上 |
-| chinese-hubert-base | 同上 |
-| G2PWModel | 同上 |
-
-把预训练模型放到：
-```
-GPT-SoVITS/
-└── GPT_SoVITS/pretrained_models/
-    ├── s1bert25hz-5kh-longer-epoch=12-step=369668.ckpt
-    ├── s2G2333k.pth
-    ├── chinese-roberta-wwm-ext-large/
-    └── chinese-hubert-base/
-```
-
-### 3. 复制本项目的模型和脚本
-
-把本项目的 `models/` 整个目录复制到 GPT-SoVITS 仓库下：
-
-```
-GPT-SoVITS/
-├── GPT_SoVITS/...
-├── models/                         <-- 复制过来
-│   ├── s1/aemeath-e20.ckpt
-│   ├── s2/aemeath_e20.pth
-│   └── reference/basic_121068.wav
-└── scripts/                        <-- 复制过来
-    └── aemeath_say.py
-```
-
-### 4. 开始说话！
+CLI 一键合成（需先配好 GPT-SoVITS 环境，[详细安装步骤](docs/INSTALLATION.md)）：
 
 ```bash
 # 命令行（最简单）
 python scripts/aemeath_say.py --text "你好，我是一行日辉的爱弥斯哦~"
-
-# 想要换个参考音频？
-python scripts/aemeath_say.py --text "测试" --ref-audio basic_121068.wav
 
 # 指定输出文件
 python scripts/aemeath_say.py --text "飞行雪绒" --output my_voice.wav

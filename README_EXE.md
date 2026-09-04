@@ -1,5 +1,15 @@
 # 爱弥斯语音 · EXE 分发版
 
+## 一键下载（Release v1.0.0）
+
+三个分卷全部下载后解压到同一目录（私密仓库需登录有权限的账号）：
+
+| 分卷 | 内容 | 大小 | 一键下载 |
+|------|------|------|----------|
+| part1 | EXE + Python 运行时 + 代码 | 576 MB | [⬇️ 下载](https://github.com/1983879947-ctrl/AemeathVoice/releases/download/v1.0.0/AemeathVoice_v1.0.0_part1_runtime.zip) |
+| part2 | 爱弥斯模型 + GPT-SoVITS v2 底座 | 1.8 GB | [⬇️ 下载](https://github.com/1983879947-ctrl/AemeathVoice/releases/download/v1.0.0/AemeathVoice_v1.0.0_part2_models.zip) |
+| part3 | G2PW 多音字模型 + 文本前端 | 608 MB | [⬇️ 下载](https://github.com/1983879947-ctrl/AemeathVoice/releases/download/v1.0.0/AemeathVoice_v1.0.0_part3_g2pw_text.zip) |
+
 ## 从零部署（拿到源码后）
 
 本仓库不含预训练底座与 G2PW 模型（体积原因），源码部署需自行补齐：

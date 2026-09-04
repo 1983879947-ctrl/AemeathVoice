@@ -213,12 +213,27 @@ class TTSRequest(BaseModel):
 # ============== 端点 ==============
 @app.get("/")
 async def root():
+    """默认路由：返回 Web 控制台（HTML）
+
+ROOT 解析策略：
+  - 打包模式（EXE）：_internal/AV/api/inference_api.py → ROOT = _internal/AV/
+    → web/ 在 ROOT/web/（PyInstaller 已复制）
+  - 源码模式：AemeathVoice_Portable/api/inference_api.py → ROOT = AemeathVoice_Portable/
+    → web/ 在仓库根 AemeathVoice/web/，需多找一层父目录
+"""
+    candidates = [ROOT / "web" / "index.html"]
+    if not candidates[0].exists():
+        candidates.append(ROOT.parent / "web" / "index.html")  # 仓库根的 web/
+    for web_index in candidates:
+        if web_index.exists():
+            from fastapi.responses import HTMLResponse
+            return HTMLResponse(content=web_index.read_text(encoding="utf-8"))
     return {
         "name": "Aemeath Voice API",
         "version": "1.0.0",
         "device": _device,
         "is_half": _is_half,
-        "endpoints": ["/health", "/voices", "/tts"],
+        "endpoints": ["/", "/health", "/voices", "/tts"],
     }
 
 

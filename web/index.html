@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="cb9SY1xI4oGWNMytJcrHmy">
+<head data-page-node-id="ul6IHU30AjWmLqJn19Dc7k">
+<meta charset="UTF-8" data-page-node-id="BZmYMlH5CV7eRmQsIecywK">
+<title>爱弥斯语音 · Aemeath Voice</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #fde6f0 0%, #f0e6fd 50%, #e6f0fd 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    color: #333;
+  }
+  .container {
+    max-width: 720px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 32px 36px;
+    box-shadow: 0 8px 32px rgba(180, 100, 180, 0.15);
+  }
+  h1 {
+    font-size: 28px;
+    background: linear-gradient(135deg, #ff6ba6, #c084fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .subtitle {
+    text-align: center;
+    color: #888;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+  .status {
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    background: #f3f4f6;
+  }
+  .status.ok { background: #d1fae5; color: #065f46; }
+  .status.error { background: #fee2e2; color: #991b1b; }
+  textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 14px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: #c084fc;
+  }
+  .row {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .row label {
+    color: #555;
+    font-size: 13px;
+  }
+  .row select, .row input {
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  button {
+    background: linear-gradient(135deg, #ff6ba6, #c084fc);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    margin-top: 16px;
+    width: 100%;
+  }
+  button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(192, 132, 252, 0.3); }
+  button:disabled { background: #d1d5db; cursor: not-allowed; transform: none; }
+  .player {
+    margin-top: 22px;
+    padding: 18px;
+    background: #fafafa;
+    border-radius: 12px;
+    display: none;
+  }
+  .player.active { display: block; }
+  .player audio { width: 100%; }
+  .meta {
+    color: #888;
+    font-size: 12px;
+    margin-top: 8px;
+    text-align: center;
+  }
+  .loading {
+    text-align: center;
+    color: #c084fc;
+    font-weight: 600;
+    padding: 12px;
+    display: none;
+  }
+  .loading.active { display: block; }
+  .presets {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .preset {
+    background: #fce7f3;
+    border: 1px solid #fbcfe8;
+    color: #831843;
+    padding: 5px 12px;
+    border-radius: 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .preset:hover { background: #fbcfe8; }
+</style>
+</head>
+<body data-page-node-id="PFPdQEvSHaosdmqEbDSBEi">
+<div class="container" data-page-node-id="B5dGBlQa2xr5ezqgKgYiTZ">
+  <h1 data-page-node-id="K8g0FoQxdfT1O8a55BnJzG">🎤 爱弥斯语音控制台</h1>
+  <p class="subtitle" data-page-node-id="5pqCBPIEd0ljEQpmE4cMZG">Aemeath Voice · GPT-SoVITS 推理</p>
+  <div id="status" class="status" data-page-node-id="Wv9cJ1RWT4eXpAXCKCLZ6E">检测 API 状态中...</div>
+
+  <label for="text" style="display:block;margin-bottom:8px;font-size:14px;color:#555;" data-page-node-id="g0Jru3LAEvWe6KUE0B9QqC">要合成的文本：</label>
+  <textarea id="text" placeholder="输入想要爱弥斯说的话…">一行日辉是爱弥斯最重要的人哦~</textarea>
+
+  <div class="presets" data-page-node-id="9NBEnANfk6wYf2ty0asp4t">
+    <span class="preset" data-text="世界由我守护，目标揭露。" data-page-node-id="xfFxjm2mCoa4sChqXqmw1s">经典台词</span>
+    <span class="preset" data-text="飞行雪绒，永不落幕。" data-page-node-id="ikuEVEBw8FG6y6aUAbFF7I">飞行雪绒</span>
+    <span class="preset" data-text="一行日辉是爱弥斯最重要的人哦~" data-page-node-id="wmhof6W2XVtVDZxnYsT3L7">一行日辉</span>
+    <span class="preset" data-text="你是笨蛋吗？不，你是我的家人呀。" data-page-node-id="bCz7zGeFpI6JnH8dOxPasD">笨蛋家人</span>
+    <span class="preset" data-text="隧者启动，热熔属性，全功率展开。" data-page-node-id="mBFsW99OCnjZKZ6Gqk2Zo4">隧者启动</span>
+    <span class="preset" data-text="在虚质磁暴深处，物理法则不再适用。" data-page-node-id="Lfeqt49nW4yqJdrvgSZB67">虚质磁暴</span>
+  </div>
+
+  <div class="row" data-page-node-id="I7VPJRizPNYM58BurcJHog">
+    <label data-page-node-id="To0Hp1AwUw821DQNGKl5P0">语言:</label>
+    <select id="lang" data-page-node-id="HPB6UZd1T8xGHa8GoMLuaN">
+      <option value="zh" selected data-page-node-id="LBeoiI3xJUS7z85ijvxjeD">中文</option>
+      <option value="en" data-page-node-id="SgHQe6iGEFLatXt9DbL28E">英文</option>
+      <option value="ja" data-page-node-id="3SBIr3zWafbKx0qasse30R">日文</option>
+    </select>
+    <label data-page-node-id="uQWrNisqsdHjP25agH4GSP">温度:</label>
+    <input id="temperature" type="number" min="0" max="2" step="0.1" value="0.6" style="width:70px;" data-page-node-id="ml1RJpslLSf3bq5wd8RB3b">
+    <label data-page-node-id="a9gLEa433OMlakXvoAPMA6">采样 top_p:</label>
+    <input id="top_p" type="number" min="0" max="1" step="0.05" value="0.6" style="width:70px;" data-page-node-id="oAfaRD3qEjXvJp6BMX3kVc">
+    <label data-page-node-id="xuElqMoYMMwsTX3cnClm0z">top_k:</label>
+    <input id="top_k" type="number" min="-1" step="1" value="20" style="width:60px;" data-page-node-id="AXkKPY45ubxUw1JFknXhHB">
+  </div>
+
+  <button id="synth" onclick="synthesize()" data-page-node-id="ctyunJQge14G1Xzo867cJn">🎵 合成语音</button>
+
+  <div id="loading" class="loading" data-page-node-id="vdcJBK0QN7BhmMQJGXCBMM">爱弥斯正在念台词…</div>
+
+  <div id="player" class="player" data-page-node-id="BW67BHCCmYP83XdqgioxMu">
+    <audio id="audio" controls data-page-node-id="dDcoXNyMrlJOm92CqeItrs"></audio>
+    <div id="meta" class="meta" data-page-node-id="vIyDWgK7cJvXahLFHtx4Sw"></div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const statusEl = $('status');
+const synthBtn = $('synth');
+const loadingEl = $('loading');
+const playerEl = $('player');
+const audioEl = $('audio');
+
+// 检查 API 健康
+async function checkHealth() {
+  try {
+    const r = await fetch('/health');
+    const j = await r.json();
+    if (j.status === 'ok') {
+      statusEl.className = 'status ok';
+      statusEl.textContent = `✓ API 就绪 · ${j.model} · ${j.device}${j.is_half ? ' · 半精度' : ''}`;
+      synthBtn.disabled = false;
+    } else {
+      throw new Error(j.message || 'API 未就绪');
+    }
+  } catch (e) {
+    statusEl.className = 'status error';
+    statusEl.textContent = '✗ API 未启动 — 请先运行 start.bat';
+    synthBtn.disabled = true;
+  }
+}
+
+// 预设台词点击
+document.querySelectorAll('.preset').forEach(el => {
+  el.addEventListener('click', () => {
+    $('text').value = el.dataset.text;
+  });
+});
+
+async function synthesize() {
+  const text = $('text').value.trim();
+  if (!text) return alert('请输入要合成的文本');
+
+  synthBtn.disabled = true;
+  loadingEl.classList.add('active');
+  playerEl.classList.remove('active');
+
+  const t0 = Date.now();
+  try {
+    const r = await fetch('/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: text,
+        text_language: $('lang').value,
+        top_k: parseInt($('top_k').value),
+        top_p: parseFloat($('top_p').value),
+        temperature: parseFloat($('temperature').value),
+      }),
+    });
+
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({ detail: r.statusText }));
+      throw new Error(err.detail || '合成失败');
+    }
+
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    audioEl.src = url;
+    audioEl.play();
+    playerEl.classList.add('active');
+
+    const duration = r.headers.get('X-Duration') || '?';
+    const latency = r.headers.get('X-Latency') || (Date.now() - t0) / 1000;
+    $('meta').textContent = `音频时长 ${duration}s · 合成耗时 ${latency}s`;
+  } catch (e) {
+    alert('合成失败: ' + e.message);
+  } finally {
+    synthBtn.disabled = false;
+    loadingEl.classList.remove('active');
+  }
+}
+
+// 回车提交（Shift+Enter 换行）
+$('text').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    synthesize();
+  }
+});
+
+checkHealth();
+setInterval(checkHealth, 5000);
+</script>
+</body>
+</html>

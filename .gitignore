@@ -70,3 +70,16 @@ venv_gpt_sovits/
 # Windows
 $RECYCLE.BIN/
 System Volume Information/
+
+# ====== EXE 打包与运行时大文件（不入库） ======
+# PyInstaller 产物
+dist/
+build/
+*.manifest
+
+# 精简版运行时模型（构建 EXE 时从别处复制，不入库）
+AemeathVoice_Portable/models/
+AemeathVoice_Portable/text/
+
+# 精简版测试音频（*.wav 全局规则已覆盖，显式列出以防遗漏）
+AemeathVoice_Portable/*.wav

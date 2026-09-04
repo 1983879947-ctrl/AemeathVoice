@@ -16,6 +16,12 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
+# 也把 api/ 和 AemeathVoice_Portable/ 加进去（兼容从主目录调用）
+ROOT_DIR = os.path.dirname(SCRIPT_DIR)
+sys.path.insert(0, ROOT_DIR)
+sys.path.insert(0, os.path.join(ROOT_DIR, "api"))
+sys.path.insert(0, os.path.join(ROOT_DIR, "AemeathVoice_Portable"))
+
 def main():
     parser = argparse.ArgumentParser(description='启动 Aemeath Voice HTTP API')
     parser.add_argument('--host', default='127.0.0.1', help='监听地址（默认 127.0.0.1，公网请用 0.0.0.0）')

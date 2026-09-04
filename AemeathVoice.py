@@ -49,14 +49,60 @@ logging.basicConfig(
 log = logging.getLogger("AemeathVoice")
 
 
+def _collect_python_candidates():
+    """收集所有可用的 Python 解释器候选（返回去重后的路径列表）"""
+    import shutil
+    cands = []
+
+    # 0. py launcher 枚举全部已安装 Python（最全）
+    try:
+        out = subprocess.run(["py", "-0p"], capture_output=True, text=True, timeout=5)
+        for line in out.stdout.splitlines():
+            line = line.strip()
+            if line.lower().endswith("python.exe") and (":\\" in line or "/" in line):
+                p = line.split()[-1]
+                if p not in cands and Path(p).exists():
+                    cands.append(p)
+    except Exception:
+        pass
+
+    # 1. PATH 里的 pythonX.Y / python
+    for name in ["python3.11", "python3.10", "python3.12", "python3.13", "python3", "python"]:
+        py = shutil.which(name)
+        if py and py not in cands:
+            cands.append(py)
+
+    # 2. 常见安装路径兜底
+    home = Path.home()
+    for v in ["311", "310", "312", "313"]:
+        p = home / "AppData" / "Local" / "Programs" / "Python" / f"Python{v}" / "python.exe"
+        if p.exists() and str(p) not in cands:
+            cands.append(str(p))
+
+    return cands
+
+
+def _check_deps(py):
+    """验证该解释器有运行 API 所需的依赖（fastapi/uvicorn/torch）"""
+    try:
+        out = subprocess.run(
+            [py, "-c", "import fastapi, uvicorn, torch; print('DEPS_OK')"],
+            capture_output=True, text=True, timeout=90,
+        )
+        return out.returncode == 0 and "DEPS_OK" in out.stdout
+    except Exception:
+        return False
+
+
 def find_python():
-    """找 Python 解释器
+    """找 Python 解释器（依赖优先，版本次之）
+
     优先级：
       1. 打包后的内嵌 Python（如果有 _internal/python/python.exe）
       2. AemeathVoice_Portable 内嵌 Python（如果存在）
-      3. 系统 Python 3.11（GPT-SoVITS 兼容性最好）
-      4. 系统 Python 3.10/3.12 兜底
-      5. 其他系统 python
+      3. 系统解释器中**依赖齐全**（import fastapi/uvicorn/torch 成功）者：
+         3.11 > 3.10 > 其他版本
+      4. 找不到则返回 None，由调用方给出指引
     """
     root = get_root()
 
@@ -70,51 +116,26 @@ def find_python():
     if portable.exists():
         return str(portable)
 
-    # 3. 系统 Python（按版本优先级）
-    import shutil
-    candidates = []
-    # 优先 3.11
-    for v in ["3.11", "3.10", "3.12", "3.9"]:
-        py = shutil.which(f"python{v}") or shutil.which(f"python3.{v[2:]}")
-        if py:
-            candidates.append(py)
-    # 兜底：系统 python
-    py = shutil.which("python")
-    if py:
-        candidates.append(py)
+    # 3. 系统解释器：先收集，再按版本偏好排序，逐个验证依赖
+    cands = _collect_python_candidates()
+    log.info(f"[find_python] 候选解释器: {cands}")
 
-    # 4. 兜底：常见安装路径（Windows）
-    home = Path.home()
-    fallback_paths = [
-        home / "AppData" / "Local" / "Programs" / "Python" / "Python311" / "python.exe",
-        home / "AppData" / "Local" / "Programs" / "Python" / "Python310" / "python.exe",
-        Path("C:/Python311/python.exe"),
-        Path("C:/Python310/python.exe"),
-        Path("D:/Python311/python.exe"),
-        Path("D:/Python310/python.exe"),
-    ]
-    for p in fallback_paths:
-        if p.exists() and str(p) not in candidates:
-            candidates.append(str(p))
+    def _ver_key(p):
+        # 3.11 最优(0)，3.10 次之(1)，其余排后
+        for pref, rank in (("311", 0), ("310", 1)):
+            if f"Python{pref}" in p or f"python3.{pref[1:]}" in p or f"3.{pref[1:]}" in p:
+                return rank
+        return 2
 
-    for py in candidates:
-        # 验证版本
-        try:
-            out = subprocess.run(
-                [py, "-c", "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"],
-                capture_output=True, text=True, timeout=5
-            )
-            ver = out.stdout.strip()
-            # GPT-SoVITS 在 3.10 / 3.11 跑得最稳
-            if ver in ("3.10", "3.11"):
-                return py
-            elif ver == "3.12" and not any("3.10" in c or "3.11" in c for c in candidates):
-                return py
-        except Exception:
-            continue
+    ordered = sorted(cands, key=_ver_key)
+    log.info("[find_python] 正在验证各解释器的依赖（fastapi/uvicorn/torch）...")
+    for py in ordered:
+        if _check_deps(py):
+            log.info(f"[find_python] ✅ 选中（依赖齐全）: {py}")
+            return py
+        log.info(f"[find_python] ⏭ 跳过（缺依赖或不可用）: {py}")
 
-    # 兜底返回第一个
-    return candidates[0] if candidates else None
+    return None
 
 
 def find_api_script():
@@ -158,14 +179,32 @@ def main():
     api = find_api_script()
 
     if not py:
-        log.error("[错误] 找不到 Python 解释器")
-        log.error("  请安装 Python 3.10+ 并加入 PATH")
+        log.error("[错误] 找不到依赖齐全的 Python 解释器")
+        log.error("  API 需要 fastapi / uvicorn / torch，请任选其一：")
+        log.error("  A) 安装 Python 3.11 并执行:")
+        log.error('     pip install fastapi "uvicorn[standard]" torch --index-url https://download.pytorch.org/whl/cu128')
+        log.error("  B) 或运行 scripts/install_deps.bat 自动安装")
         input("按回车退出...")
         sys.exit(1)
 
     if not api:
         log.error("[错误] 找不到 API 启动脚本")
         log.error(f"  期望位置: {root}/scripts/launch_aemeath_api.py")
+        input("按回车退出...")
+        sys.exit(1)
+
+    # 模型分卷完整性检查（part2 = models/, part3 = text/）
+    missing = []
+    if not (root / "models" / "s1" / "aemeath-e20.ckpt").exists():
+        missing.append("models/  ← 缺 part2_models.zip（1.8 GB，爱弥斯模型 + 底座）")
+    if not (root / "text" / "G2PWModel" / "g2pW.onnx").exists():
+        missing.append("text/    ← 缺 part3_g2pw_text.zip（608 MB，G2PW 多音字模型）")
+    if missing:
+        log.error("[错误] 模型文件不完整！只解压了 part1_runtime.zip？")
+        log.error("  请把以下分卷也下载，并解压到 EXE 所在目录（解压后应出现这些文件夹）：")
+        for m in missing:
+            log.error(f"  ✗ {m}")
+        log.error("  下载页: https://github.com/1983879947-ctrl/AemeathVoice/releases/tag/v1.0.0")
         input("按回车退出...")
         sys.exit(1)
 

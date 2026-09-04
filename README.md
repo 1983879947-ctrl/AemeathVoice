@@ -8,6 +8,7 @@
 [![PyTorch 2.1+](https://img.shields.io/badge/PyTorch-2.1+-ee4c2c.svg)](https://pytorch.org/)
 [![CUDA 12.x](https://img.shields.io/badge/CUDA-12.x-76b900.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![AI Assisted](https://img.shields.io/badge/AI_assisted-WorkBuddy-8A2BE2.svg)](#ai-协作声明)
 
 ## ✨ 项目简介
 
@@ -138,6 +139,16 @@ AemeathVoice/
 ## 🤝 贡献
 
 欢迎贡献更多爱弥斯训练样本（音频 + 字幕），或者提交训练参数调优的 PR！
+
+## 🤖 AI 协作声明
+
+本项目由 **一行日辉** 发起并主导，部分开发工作在 AI 编程助手协助下完成：
+
+- **人工完成**：项目创意与规划、训练数据整理与校对、模型训练与效果验收、最终决策
+- **AI 协助完成**：GPT-SoVITS 推理代码精简移植与 bug 修复、EXE 打包工程、GUI / Web 控制台、发布脚本与文档编写
+- **依赖的开源框架**：[GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)（语音克隆训练与推理框架）
+
+训练与推理均基于上述开源框架在本地完成，不涉及任何云端模型服务。
 
 ## ⚖️ 版权与免责声明
 

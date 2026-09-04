@@ -265,6 +265,11 @@ async def tts(req: TTSRequest):
 
     try:
         t0 = time.time()
+        # 字符数 → 期望最长音频秒数。中文 0.25s/字（朗读节奏），最低 3s 上限 20s。
+        text_len = len(req.text.strip())
+        expect_max_sec = max(3.0, min(20.0, text_len * 0.25))
+        # 硬上限：字符数 × 1.5（远超正常朗读速度，绝对是失控）
+        hard_cap_sec = max(6.0, text_len * 1.5)
         result = list(_tts_model(
             ref_wav_path=ref_audio,
             prompt_text=prompt_text,
@@ -279,6 +284,16 @@ async def tts(req: TTSRequest):
             raise HTTPException(500, "合成失败：返回结果为空")
 
         sr, audio = result[-1]
+        # 失控硬截断：输出 > 硬上限 → 截断音频（保留到硬上限对应位置）
+        if audio is not None and sr:
+            dur = len(audio) / sr
+            if dur > hard_cap_sec:
+                cap_samples = int(hard_cap_sec * sr)
+                logging.warning(
+                    f"[API] 输出 {dur:.1f}s 触发硬截断（hard_cap={hard_cap_sec:.1f}s），"
+                    f"疑似 GPT EOS 学习不到位，截掉尾部 {dur-hard_cap_sec:.1f}s 模糊音"
+                )
+                audio = audio[:cap_samples]
         import soundfile as sf
         import numpy as np
         # soundfile 不支持 float16，转 float32

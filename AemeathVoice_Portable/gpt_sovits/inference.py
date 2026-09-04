@@ -412,7 +412,8 @@ def get_tts_wav(
             top_k=top_k,
             top_p=top_p,
             temperature=temperature,
-            early_stop_num=1000,  # 对齐原版 webui: hz*max_sec=50*20，防偶发无限生成
+            repetition_penalty=1.35,  # 对齐原版 webui，防重复字成"乱码长音"
+            early_stop_num=600,      # 收紧到 12 秒上限（50Hz*12s），降低失控生成的模糊尾音概率
         )
     pred_semantic = pred_semantic[:, -idx:].unsqueeze(dim=0)
     print(f"  T2S 用时: {ttime() - t_1:.2f}s")

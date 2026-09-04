@@ -327,11 +327,10 @@ def get_tts_wav(
         if is_half:
             ssl_content = ssl_content.half()
         codes = vq_model.extract_latent(ssl_content)
-        # prompt_semantic: 参考音频 token 序列
-        if codes.dim() == 2:
-            prompt_semantic = codes[:, 0]  # (T,)
-        elif codes.dim() == 3:
-            prompt_semantic = codes[0, :, 0]  # (T,)
+        # 对齐原版 webui: codes=(B, layers, T) → codes[0, 0] = (T,) 完整语义序列
+        # （之前误写成 codes[0,:,0] 只取到 1 帧，prompt 语义缺失导致复读参考台词）
+        if codes.dim() >= 2:
+            prompt_semantic = codes[0, 0]  # (T,)
         else:
             prompt_semantic = codes.flatten()
         prompt = prompt_semantic.unsqueeze(0).to(device).long()  # (1, T) long
@@ -413,7 +412,7 @@ def get_tts_wav(
             top_k=top_k,
             top_p=top_p,
             temperature=temperature,
-            early_stop_num=1500,  # 防止无限生成；webui 默认 hz*max_sec=50*20=1000，但 1500 更保险
+            early_stop_num=1000,  # 对齐原版 webui: hz*max_sec=50*20，防偶发无限生成
         )
     pred_semantic = pred_semantic[:, -idx:].unsqueeze(dim=0)
     print(f"  T2S 用时: {ttime() - t_1:.2f}s")

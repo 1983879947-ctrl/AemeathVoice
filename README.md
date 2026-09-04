@@ -39,7 +39,6 @@
 | part3 | G2PW 多音字模型 + 文本前端 | 608 MB | [⬇️ 下载](https://github.com/1983879947-ctrl/AemeathVoice/releases/download/v1.0.0/AemeathVoice_v1.0.0_part3_g2pw_text.zip) |
 
 > 也可以到 [Release v1.0.0](https://github.com/1983879947-ctrl/AemeathVoice/releases/tag/v1.0.0) 页面统一下载。
-> 本仓库为私密，下载需登录有权限的 GitHub 账号。
 
 **三步上手：**
 
